@@ -147,7 +147,7 @@ class _ShowState extends State<Show> {
                               ))),
                       Container(
                           height: screenHeight / 20,
-                          child: Text(date2,
+                          child: Text(date2,//todo 月はJanなどの形式にする
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 25 * adjustsizeh,
