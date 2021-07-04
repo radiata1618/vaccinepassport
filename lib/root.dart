@@ -65,9 +65,9 @@ class _RootState extends State<Root> {
                                     BorderRadius.circular(screenWidth * 0.1),
                               )),
                           child: Text(
-                            "パスポートを表示",
+                            "show Passport",
                             style: TextStyle(
-                              fontSize: 20 * adjustsizeh,
+                              fontSize: 22 * adjustsizeh,
                             ),
                           ),
                         ),
@@ -94,9 +94,9 @@ class _RootState extends State<Root> {
                                     BorderRadius.circular(screenWidth * 0.1),
                               )),
                           child: Text(
-                            "情報を登録",
+                            "register your info",
                             style: TextStyle(
-                              fontSize: 20 * adjustsizeh,
+                              fontSize: 22 * adjustsizeh,
                             ),
                           ),
                         ),

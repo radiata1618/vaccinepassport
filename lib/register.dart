@@ -3,6 +3,8 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import "package:intl/intl.dart";
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'db.dart';
+
 class Register extends StatefulWidget {
   Register({Key key}) : super(key: key);
 
@@ -18,6 +20,9 @@ class _RegisterState extends State<Register> {
 
   var primaryColor = Color(0xFF52ccc2);
   var btnColor = Color(0xFF52ccc2);
+  var hintColor = Color(0xFFD0D0D0);
+
+  bool initialDataRead=false;
 
   @override
   initState() {
@@ -32,9 +37,16 @@ class _RegisterState extends State<Register> {
     const double horizontalPadding = 50.0;
     const double verticalmargin = 3.0;
 
-    return SingleChildScrollView(
-        child: Scaffold(
-            body: Column(
+    MyDatabase db = MyDatabase();
+
+    if(initialDataRead==false) {
+      loadAsset(db);
+    }
+
+
+    return  Scaffold(
+            body: SingleChildScrollView(
+                child:Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -70,12 +82,13 @@ class _RegisterState extends State<Register> {
                     fontSize: 25 * adjustsizeh, color: Colors.black),
                 decoration: InputDecoration(
                   hintText: "Yamada",
+                  hintStyle: TextStyle(color: hintColor),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: primaryColor),
                   ),
                 ),
                 controller: _textControllerFamilyName,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 inputFormatters: []),
           ),
           Container(
@@ -98,6 +111,7 @@ class _RegisterState extends State<Register> {
                     fontSize: 25 * adjustsizeh, color: Colors.black),
                 decoration: InputDecoration(
                   hintText: "Taro",
+                  hintStyle: TextStyle(color: hintColor),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: primaryColor),
                   ),
@@ -136,12 +150,13 @@ class _RegisterState extends State<Register> {
                               fontSize: 25 * adjustsizeh, color: Colors.black),
                           decoration: InputDecoration(
                             hintText: "2021/01/01",
+                            hintStyle: TextStyle(color: hintColor),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: primaryColor),
                             ),
                           ),
                           controller: _textController1stDate,
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.text,//数値とスラッシュのみを許すようにしたい。。。
                           inputFormatters: []),
                     ),
                     IconButton(
@@ -204,13 +219,14 @@ class _RegisterState extends State<Register> {
                               fontSize: 25 * adjustsizeh, color: Colors.black),
                           decoration: InputDecoration(
                             hintText: "2021/01/01",
+                            hintStyle: TextStyle(color: hintColor),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: primaryColor),
                             ),
                           ),
                           controller: _textController2ndDate,
                           keyboardType: TextInputType.text,
-                          inputFormatters: []),
+                          inputFormatters: []),//数値とスラッシュのみを許すようにしたい。。。
                     ),
                     IconButton(
                       icon: Icon(Icons.calendar_today_outlined),
@@ -250,6 +266,13 @@ class _RegisterState extends State<Register> {
               width: screenWidth * 0.7,
               child: TextButton(
                 onPressed: () {
+
+                  changeParameter(_textControllerFamilyName.text
+                  ,_textControllerGivenName.text
+                  ,_textController1stDate.text
+                  ,_textController2ndDate.text
+                  ,db);
+
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(
@@ -259,7 +282,7 @@ class _RegisterState extends State<Register> {
                       borderRadius: BorderRadius.circular(screenWidth * 0.1),
                     )),
                 child: Text(
-                  "登録",
+                  "register",
                   style: TextStyle(
                     fontSize: 20 * adjustsizeh,
                   ),
@@ -269,4 +292,77 @@ class _RegisterState extends State<Register> {
           ),
         ])));
   }
+
+  Future<void> loadAsset(
+      MyDatabase db
+      ) async{
+
+    List<Parameter> familyNameList = await db.selectParameterByCode("familyName");
+    List<Parameter> givenNameList = await db.selectParameterByCode("givenName");
+    List<Parameter> date1List = await db.selectParameterByCode("date1");
+    List<Parameter> date2List = await db.selectParameterByCode("date2");
+
+    setState((){
+
+      _textControllerFamilyName = TextEditingController(
+          text: familyNameList[0].textValue);
+
+      _textControllerGivenName = TextEditingController(
+          text: givenNameList[0].textValue);
+
+      _textController1stDate = TextEditingController(
+          text: date1List[0].textValue);
+
+    _textController2ndDate = TextEditingController(
+        text: date2List[0].textValue);
+      initialDataRead=true;
+  })
+
+
+    ;
+
+
+  }
+
+  Future<void> changeParameter(String familyName
+      ,String givenName
+      ,String date1
+      ,String date2
+      ,MyDatabase db
+      ) async{
+
+
+    //delete all
+    List<Parameter> pList = await db.getAllparameters();
+    for(var parameter in pList){
+      await db.deleteparameter(parameter);
+    }
+
+    //register
+    Parameter parameterFamilyName = Parameter(
+        code:"familyName"
+        ,numberValue:1
+        ,textValue:familyName);
+    db.insertparameter(parameterFamilyName);
+
+    Parameter parameterGivenName = Parameter(
+        code:"givenName"
+        ,numberValue:2
+        ,textValue:givenName);
+    db.insertparameter(parameterGivenName);
+
+    Parameter parameterDate1 = Parameter(
+        code:"date1"
+        ,numberValue:3
+        ,textValue:date1);
+    db.insertparameter(parameterDate1);
+
+    Parameter parameterDate2 = Parameter(
+        code:"date2"
+        ,numberValue:4
+        ,textValue:date2);
+    db.insertparameter(parameterDate2);
+  }
+
 }
+

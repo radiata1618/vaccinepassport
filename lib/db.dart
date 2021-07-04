@@ -54,10 +54,28 @@ class MyDatabase extends _$MyDatabase {
         .map((row) =>
         Parameter(
             code: row.readString('code'),
-            numberValue: row.readInt('number_value'),
-            textValue: row.readString('text_value'),
-            timeValue: row.readDateTime('time_value'),
-            booleanValue: row.readBool('boolean_value')))
+            numberValue: row.read('number_value'),
+            textValue: row.read('text_value'),
+            timeValue: row.read('time_value'),
+            booleanValue: row.read('boolean_value')))
+        .get();
+  }
+
+
+  Future<List<Parameter>> selectAllParametersOrderByNumber() {
+    return customSelect(
+      'SELECT *'
+          + 'From parameters '
+          + 'Order by number_value ASC;',
+      readsFrom: {parameters},
+    )
+        .map((row) =>
+        Parameter(
+            code: row.read('code'),
+            numberValue: row.read('number_value'),
+            textValue: row.read('text_value'),
+            timeValue: row.read('time_value'),
+            booleanValue: row.read('boolean_value')))
         .get();
   }
 }
