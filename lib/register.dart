@@ -195,7 +195,7 @@ class _RegisterState extends State<Register> {
               height: screenHeight / 20,
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Vaccination Date(2st Dose)",
+                  child: Text("Vaccination Date(2nd Dose)",
                       style: TextStyle(
                         color: primaryColor,
                         fontSize: 20 * adjustsizeh,
